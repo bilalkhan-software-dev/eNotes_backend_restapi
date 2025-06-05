@@ -13,6 +13,7 @@ import com.enotes.Repository.FavouriteNotesRepository;
 import com.enotes.Repository.FileDetailRepository;
 import com.enotes.Repository.NotesRepository;
 import com.enotes.Service.NotesService;
+import com.enotes.Util.CommonUtil;
 import com.enotes.Util.Validation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -215,7 +216,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public NotesResponse getAllActiveNotesByUserWithPagination(Integer pageNo, Integer pageSize, String sortBy, String direction) throws ResourceNotFoundException {
-        Integer userId = 1;
+        Integer userId = CommonUtil.GetLoggedInUserDetails().getId();
 
 
         Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
@@ -241,7 +242,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public List<NotesDto> getUserRecycleBinNotes() throws ResourceNotFoundException {
-        Integer userId = 1;
+        Integer userId = CommonUtil.GetLoggedInUserDetails().getId();
         return notesRepository.findByCreatedByAndIsDeletedTrue(userId)
                 .stream()
                 .map(notes -> modelMapper.map(notes, NotesDto.class))
@@ -291,11 +292,14 @@ public class NotesServiceImpl implements NotesService {
     @Override
     public void clearRecycleBin() {
 
-        Integer userId = 1;
+        Integer userId = CommonUtil.GetLoggedInUserDetails().getId();
         List<Notes> isDeleted = notesRepository.findByCreatedByAndIsDeletedTrue(userId);
 
         if (!CollectionUtils.isEmpty(isDeleted)) {
             notesRepository.deleteAll(isDeleted);
+        }
+        if (ObjectUtils.isEmpty(isDeleted)){
+            throw new IllegalArgumentException("Recycle Bin is already empty");
         }
     }
 
@@ -303,7 +307,7 @@ public class NotesServiceImpl implements NotesService {
     @Override
     public void addNotesToFavourite(Integer noteId) throws ResourceNotFoundException {
 
-        Integer userId = 2;
+        Integer userId = CommonUtil.GetLoggedInUserDetails().getId();
 
         Notes notes = notesRepository.findById(noteId).orElseThrow(
                 () -> new ResourceNotFoundException("Invalid note id! Not Found")
@@ -330,7 +334,7 @@ public class NotesServiceImpl implements NotesService {
     @Override
     public List<FavouriteNotesDto> getUserFavouriteNotes(){
 
-        Integer userId = 2 ;
+        Integer userId = CommonUtil.GetLoggedInUserDetails().getId() ;
         List<FavouriteNotes> favouriteNotesByUserId = favouriteNotesRepository.findByUserId(userId);
 
         return favouriteNotesByUserId.stream()
