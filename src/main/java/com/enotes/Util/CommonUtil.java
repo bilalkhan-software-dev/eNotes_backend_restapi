@@ -1,10 +1,13 @@
 package com.enotes.Util;
 
+import com.enotes.Config.Security.CustomUserDetail;
+import com.enotes.Entity.User;
 import com.enotes.Handler.GenericResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 
@@ -15,7 +18,7 @@ public class CommonUtil {
     @Value("${website.base.url}")
     private String WEBSITE_DOMAIN;
 
-    public static ResponseEntity<?> createBuildResponse(Object data, HttpStatus httpStatus){
+    public static ResponseEntity<?> createBuildResponse(Object data, HttpStatus httpStatus) {
 
         GenericResponse response = GenericResponse.builder()
                 .responseHttpStatus(httpStatus)
@@ -27,7 +30,7 @@ public class CommonUtil {
         return response.create();
     }
 
-    public static ResponseEntity<?> createBuildResponseMessage(String message,HttpStatus httpStatus){
+    public static ResponseEntity<?> createBuildResponseMessage(String message, HttpStatus httpStatus) {
 
         GenericResponse response = GenericResponse.builder()
                 .responseHttpStatus(httpStatus)
@@ -37,7 +40,8 @@ public class CommonUtil {
 
         return response.create();
     }
-    public static ResponseEntity<?> createErrorResponse(Object data,HttpStatus httpStatus){
+
+    public static ResponseEntity<?> createErrorResponse(Object data, HttpStatus httpStatus) {
 
         GenericResponse response = GenericResponse.builder()
                 .responseHttpStatus(httpStatus)
@@ -47,7 +51,8 @@ public class CommonUtil {
 
         return response.create();
     }
-    public static ResponseEntity<?> createErrorResponseMessage(String message,HttpStatus httpStatus){
+
+    public static ResponseEntity<?> createErrorResponseMessage(String message, HttpStatus httpStatus) {
 
         GenericResponse response = GenericResponse.builder()
                 .responseHttpStatus(httpStatus)
@@ -73,8 +78,19 @@ public class CommonUtil {
     }
 
 
-    public String generateUrl(Integer userId,String token){
-        return WEBSITE_DOMAIN+"/api/v1/home/verify-email?userId=" +userId+ "&token=" +token;
+    public String generateUrl(Integer userId, String token) {
+        return WEBSITE_DOMAIN + "/api/v1/home/verify-email?userId=" + userId + "&token=" + token;
     }
 
+    public static User GetLoggedInUserDetails() {
+
+        try {
+
+            CustomUserDetail loggedInUser = (CustomUserDetail) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return loggedInUser.getUser();
+
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 }

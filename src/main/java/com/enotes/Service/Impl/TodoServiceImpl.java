@@ -6,6 +6,7 @@ import com.enotes.Dto.TodoDto.StatusDto;
 import com.enotes.Exception.ResourceNotFoundException;
 import com.enotes.Repository.TodoRepository;
 import com.enotes.Service.TodoService;
+import com.enotes.Util.CommonUtil;
 import com.enotes.Util.TodoStatus;
 import com.enotes.Util.Validation;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +73,7 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public List<TodoDto> getTodoByUser() {
 
-        Integer userId = 1;
+        Integer userId = CommonUtil.GetLoggedInUserDetails().getId();
 
         List<Todo> todoList = todoRepository.findByCreatedBy(userId);
         return todoList.stream().map(

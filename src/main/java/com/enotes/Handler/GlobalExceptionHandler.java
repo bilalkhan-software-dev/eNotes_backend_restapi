@@ -2,6 +2,7 @@ package com.enotes.Handler;
 
 
 import com.enotes.Exception.ExistDataException;
+import com.enotes.Exception.JwtTokenExpiredException;
 import com.enotes.Exception.ResourceNotFoundException;
 import com.enotes.Exception.ValidationException;
 import com.enotes.Util.CommonUtil;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -75,16 +77,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(FileNotFoundException.class)
-    public ResponseEntity<?> fileNotFoundException(FileNotFoundException e){
-        log.error("Global Exception Handler: fileNotFoundException() : {}",e.getMessage());
-        return CommonUtil.createErrorResponseMessage(e.getMessage(),HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> fileNotFoundException(FileNotFoundException e) {
+        log.error("Global Exception Handler: fileNotFoundException() : {}", e.getMessage());
+        return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-//    @ExceptionHandler(BadCredentialException.class)
-//    public ResponseEntity<?> badCredentialException(BadCredentialsException e)
-//            log.error("Global Exception Handler: badCredentialException() : {}",e.getMessage());
-//        return CommonUtil.createErrorResponseMessage(e.getMessage(),HttpStatus.BAD_REQUEST);
-
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<?> badCredentialException(BadCredentialsException e) {
+        log.error("Global Exception Handler: badCredentialException() : {}", e.getMessage());
+        return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(JwtTokenExpiredException.class)
+    public ResponseEntity<?> jwtTokenExpiredException(JwtTokenExpiredException e) {
+        log.error("Global Exception Handler: jwtTokenExpiredException() : {}", e.getMessage());
+        return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
 
 }
