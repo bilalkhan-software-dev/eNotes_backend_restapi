@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -28,7 +30,9 @@ public class AccountStatus {
 
     private String verificationCode;
 
-    private String resetPasswordCode;
-    
+    // This should be 6 digit OTP -> One Time Password
+    private Integer resetPasswordCode;
+
+    private LocalDateTime otpGeneratedTime;
 
 }
