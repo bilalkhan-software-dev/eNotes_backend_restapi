@@ -3,6 +3,7 @@ package com.enotes.Service.Impl;
 import com.enotes.Entity.AccountStatus;
 import com.enotes.Entity.User;
 import com.enotes.Exception.ResourceNotFoundException;
+import com.enotes.Exception.SuccessException;
 import com.enotes.Repository.UserRepository;
 import com.enotes.Service.HomeService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class HomeServiceImpl implements HomeService {
                 () -> new ResourceNotFoundException("Invalid user!")
         );
         if (user.getStatus().getVerificationCode() == null || user.getStatus().getVerificationCode().isEmpty()) {
-            throw new IllegalArgumentException("User is already registered!");
+            throw new SuccessException("User is already registered!");
         }
 
         if (user.getStatus().getVerificationCode().equals(token)) {

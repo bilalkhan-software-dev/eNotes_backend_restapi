@@ -7,6 +7,7 @@ import com.enotes.Util.CommonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class TodoController {
 
 
     @PostMapping("/add-todos")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> addTodo(@RequestBody TodoDto todoDto) {
 
         boolean isAdded = todoService.addTodo(todoDto);
@@ -33,6 +35,7 @@ public class TodoController {
      }
 
     @GetMapping("/dtls/{todoId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getTodoById(@PathVariable Integer todoId) throws ResourceNotFoundException {
 
         TodoDto isAvailable = todoService.getTodoById(todoId);
@@ -42,6 +45,7 @@ public class TodoController {
     }
 
     @GetMapping("/todos")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getAllTodoByUser() {
 
         List<TodoDto> todoByUser = todoService.getTodoByUser();
@@ -53,6 +57,7 @@ public class TodoController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> updateTodoStatus(@PathVariable Integer id,@RequestBody TodoDto todoDto) throws ResourceNotFoundException {
 
        boolean isUpdated =   todoService.updateStatus(id,todoDto);

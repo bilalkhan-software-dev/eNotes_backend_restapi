@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 
 @Component
@@ -66,7 +67,6 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private void generateResponse(HttpServletResponse response,Exception e) throws IOException {
-
         response.setContentType("application/json");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         Object errors = GenericResponse.builder()
