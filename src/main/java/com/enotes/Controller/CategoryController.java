@@ -23,7 +23,9 @@ public class CategoryController {
     private final CategoryService categoryService;
     
 
+
     @PostMapping("/add-category")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) {
 
         boolean b = categoryService.addCategory(categoryDto);
@@ -35,6 +37,7 @@ public class CategoryController {
 
 
     @GetMapping("/category")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllCategory() {
         List<CategoryDto> allCategory = categoryService.getAllCategory();
 
@@ -45,6 +48,7 @@ public class CategoryController {
     }
 
     @GetMapping("/active-category")
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public ResponseEntity<?> getAllActiveCategory() {
 
         List<CategoryResponse> allCategory = categoryService.getActiveCategory();
@@ -56,6 +60,7 @@ public class CategoryController {
     }
 
     @GetMapping("/category/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getCategoryDetailById(@PathVariable Integer id) {
 
         try {
@@ -72,6 +77,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/delete-category/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCategoryById(@PathVariable Integer id) {
 
         try {
@@ -87,6 +93,7 @@ public class CategoryController {
     }
 
     @PutMapping("/update-category/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateCategory(@PathVariable Integer id, @RequestBody CategoryDto categoryDto) throws ResourceNotFoundException {
 
         boolean b = categoryService.updateCategory(id, categoryDto);

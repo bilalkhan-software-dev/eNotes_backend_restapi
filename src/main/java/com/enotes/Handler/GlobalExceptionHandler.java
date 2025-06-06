@@ -1,22 +1,18 @@
 package com.enotes.Handler;
 
-
-import com.enotes.Exception.ExistDataException;
-import com.enotes.Exception.JwtTokenExpiredException;
-import com.enotes.Exception.ResourceNotFoundException;
-import com.enotes.Exception.ValidationException;
+import com.enotes.Exception.*;
 import com.enotes.Util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.FileNotFoundException;
-import java.nio.file.AccessDeniedException;
 
 @ControllerAdvice
 @Slf4j
@@ -26,6 +22,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleException(Exception e) {
         log.error("Global Exception Handler: handleException() : {}", e.getMessage());
         return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(SuccessException.class)
+    public ResponseEntity<?> successException(SuccessException e) {
+        log.error("Global Exception Handler: successException() : {}", e.getMessage());
+        return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.OK);
     }
 
     @ExceptionHandler(NullPointerException.class)
@@ -43,7 +45,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException e) {
         log.error("Global Exception Handler: resourceNotFoundException() : {}", e.getMessage());
-        return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return CommonUtil.createErrorResponseMessage(e.getMessage(), HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
