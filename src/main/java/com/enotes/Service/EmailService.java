@@ -1,6 +1,5 @@
 package com.enotes.Service;
 
-import jakarta.mail.MessagingException;
 
 public interface EmailService {
 
