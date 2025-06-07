@@ -31,6 +31,11 @@ public class AppConstant {
     public static final String USER = "ROLE_USER";
     public static final String ADMIN = "ROLE_ADMIN";
 
+    public static final String AUTH_ROLE_ADMIN = "hasRole('ADMIN')";
+    public static final String AUTH_ROLE_USER = "hasRole('USER')";
+    public static final String AUTH_ROLE_ADMIN_OR_USER = "hasAnyRole('ADMIN','USER')";
+
+
 
     public static final String DefaultPageNumber = "0";
     public static final String DefaultPageSize = "5";

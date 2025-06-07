@@ -2,6 +2,7 @@ package com.enotes.Controller;
 
 import com.enotes.Dto.CategoryDto;
 import com.enotes.Dto.CategoryResponse;
+import com.enotes.Endpoints.CategoryControllerEndpoints;
 import com.enotes.Exception.ResourceNotFoundException;
 import com.enotes.Service.CategoryService;
 import com.enotes.Util.CommonUtil;
@@ -16,17 +17,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/category")
 @RequiredArgsConstructor
-public class CategoryController {
+public class CategoryController implements CategoryControllerEndpoints {
 
     private final CategoryService categoryService;
-    
 
-
-    @PostMapping("/add-category")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto) {
+    @Override
+    public ResponseEntity<?> saveCategory(CategoryDto categoryDto) {
 
         boolean b = categoryService.addCategory(categoryDto);
         if (b) {
@@ -35,9 +32,7 @@ public class CategoryController {
         return CommonUtil.createErrorResponseMessage("Category Saved Failed!", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
-    @GetMapping("/category")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Override
     public ResponseEntity<?> getAllCategory() {
         List<CategoryDto> allCategory = categoryService.getAllCategory();
 
@@ -47,8 +42,7 @@ public class CategoryController {
         return CommonUtil.createBuildResponse(allCategory, HttpStatus.OK);
     }
 
-    @GetMapping("/active-category")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    @Override
     public ResponseEntity<?> getAllActiveCategory() {
 
         List<CategoryResponse> allCategory = categoryService.getActiveCategory();
@@ -59,9 +53,9 @@ public class CategoryController {
         return CommonUtil.createBuildResponse(allCategory, HttpStatus.OK);
     }
 
-    @GetMapping("/category/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getCategoryDetailById(@PathVariable Integer id) {
+
+    @Override
+    public ResponseEntity<?> getCategoryDetailById(Integer id) {
 
         try {
             CategoryDto categoryById = categoryService.getCategoryById(id);
@@ -76,9 +70,8 @@ public class CategoryController {
         return CommonUtil.createErrorResponseMessage("Category not found with id :" + id, HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/delete-category/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteCategoryById(@PathVariable Integer id) {
+    @Override
+    public ResponseEntity<?> deleteCategoryById(Integer id) {
 
         try {
             boolean isDeleted = categoryService.deleteCategory(id);
@@ -92,9 +85,9 @@ public class CategoryController {
         return CommonUtil.createErrorResponseMessage("Category not delete with id :" + id, HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping("/update-category/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateCategory(@PathVariable Integer id, @RequestBody CategoryDto categoryDto) throws ResourceNotFoundException {
+
+    @Override
+    public ResponseEntity<?> updateCategory(Integer id, CategoryDto categoryDto) throws ResourceNotFoundException {
 
         boolean b = categoryService.updateCategory(id, categoryDto);
         if (b) {

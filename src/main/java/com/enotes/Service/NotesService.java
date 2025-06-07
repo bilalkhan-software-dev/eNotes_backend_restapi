@@ -19,7 +19,9 @@ public interface NotesService {
     // show note according to the requirement
     List<NotesDto> getAllNotes();
     NotesResponse getAllActiveNotesByUserWithPagination(Integer pageNo,Integer pageSize,String sortBy,String direction) throws ResourceNotFoundException;
+    NotesResponse searchNotes(String keyword, Integer pageNo, Integer pageSize, String sortBy, String direction);
     List<NotesDto> getUserRecycleBinNotes() throws ResourceNotFoundException;
+
 
 
     FileDetails getFileDetailsById(Integer id) throws ResourceNotFoundException;
@@ -40,10 +42,6 @@ public interface NotesService {
 
     // Copy note
     boolean copyNote(Integer noteId) throws ResourceNotFoundException;
-
-
-
-
 
 
 
