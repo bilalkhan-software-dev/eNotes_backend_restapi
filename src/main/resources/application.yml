@@ -1,0 +1,127 @@
+spring:
+  application:
+     name: eNotes_backend_restapi
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+
+server:
+  port: 8081
+
+---
+# dev Profile Configuration
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SQL_URL:jdbc:mysql://localhost:3306/enotes}
+    username: ${SQL_USERNAME}
+    password: ${SQL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+  mail:
+    host: smtp.gmail.com
+    username: ${EMAIL_USERNAME:bilalkhan.devse@gmail.com}
+    password: ${EMAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+website:
+  base:
+    url: ${BASE_URL:http://localhost:8081}
+upload:
+  file:
+    path: ${FILE_PATH:enotes/}
+
+---
+# prod profile configuration
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SQL_URL:jdbc:mysql://localhost:3306/enotes_prod}
+    username: ${SQL_USERNAME}
+    password: ${SQL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+  mail:
+    host: smtp.gmail.com
+    username: ${EMAIL_USERNAME:bilalkhan.devse@gmail.com}
+    password: ${EMAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+website:
+  base:
+    url: ${BASE_URL:http://localhost:8081}
+upload:
+  file:
+    path: ${FILE_PATH:enotes/}
+
+
+---
+# test profile configuration
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SQL_URL:jdbc:mysql://localhost:3306/enotes_test}
+    username: ${SQL_USERNAME}
+    password: ${SQL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+  mail:
+    host: smtp.gmail.com
+    username: ${EMAIL_USERNAME:bilalkhan.devse@gmail.com}
+    password: ${EMAIL_PASSWORD}
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+website:
+  base:
+    url: ${BASE_URL:http://localhost:8081}
+upload:
+  file:
+    path: ${FILE_PATH:enotes/}
+

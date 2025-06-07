@@ -3,6 +3,7 @@ package com.enotes.Controller;
 import com.enotes.Dto.LoginRequest;
 import com.enotes.Dto.LoginResponse;
 import com.enotes.Dto.UserDto;
+import com.enotes.Endpoints.AuthControllerEndpoints;
 import com.enotes.Service.AuthService;
 import com.enotes.Util.CommonUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,14 +14,13 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthControllerEndpoints {
 
     private final AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) throws Exception {
+    @Override
+    public ResponseEntity<?> registerUser(UserDto userDto) throws Exception {
 
         boolean isRegistered = authService.registerUser(userDto);
         if (isRegistered) {
@@ -29,9 +29,8 @@ public class AuthController {
         return CommonUtil.createErrorResponseMessage("Registration Failed! Try again later", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+    @Override
+    public ResponseEntity<?> login(LoginRequest loginRequest){
 
         LoginResponse response = authService.authenticateLoginUser(loginRequest);
         if (!ObjectUtils.isEmpty(response)){

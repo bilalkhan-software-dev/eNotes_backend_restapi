@@ -240,6 +240,31 @@ public class NotesServiceImpl implements NotesService {
                 .build();
     }
 
+
+    @Override
+    public NotesResponse searchNotes(String keyword, Integer pageNo, Integer pageSize, String sortBy, String direction) {
+
+        Integer userId = CommonUtil.GetLoggedInUserDetails().getId();
+        Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(pageNo,pageSize,sort);
+
+        Page<Notes> searchedNotesList = notesRepository.searchNotes(keyword, userId, pageable);
+        List<NotesDto> searchedNotesDtoList = searchedNotesList.stream().map(list -> modelMapper.map(list, NotesDto.class)).toList();
+
+
+        return NotesResponse.builder()
+                .notesDtoList(searchedNotesDtoList)
+                .totalElements(searchedNotesList.getTotalElements())
+                .totalPages(searchedNotesList.getTotalPages())
+                .isFirst(searchedNotesList.isFirst())
+                .isLast(searchedNotesList.isLast())
+                .direction(direction)
+                .sortBy(sortBy)
+                .pageNo(searchedNotesList.getNumber())
+                .pageSize(searchedNotesList.getSize())
+                .build();
+    }
+
     @Override
     public List<NotesDto> getUserRecycleBinNotes() throws ResourceNotFoundException {
         Integer userId = CommonUtil.GetLoggedInUserDetails().getId();

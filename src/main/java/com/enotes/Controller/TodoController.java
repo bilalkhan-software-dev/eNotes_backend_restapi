@@ -1,6 +1,7 @@
 package com.enotes.Controller;
 
 import com.enotes.Dto.TodoDto;
+import com.enotes.Endpoints.TodoControllerEndpoints;
 import com.enotes.Exception.ResourceNotFoundException;
 import com.enotes.Service.TodoService;
 import com.enotes.Util.CommonUtil;
@@ -14,16 +15,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/todo")
 @RequiredArgsConstructor
-public class TodoController {
+public class TodoController implements TodoControllerEndpoints {
 
     private final TodoService todoService;
 
 
-    @PostMapping("/add-todos")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> addTodo(@RequestBody TodoDto todoDto) {
+    @Override
+    public ResponseEntity<?> addTodo(TodoDto todoDto) {
 
         boolean isAdded = todoService.addTodo(todoDto);
 
@@ -32,41 +31,40 @@ public class TodoController {
         }
 
         return CommonUtil.createErrorResponseMessage("Adding todo failed!", HttpStatus.INTERNAL_SERVER_ERROR);
-     }
+    }
 
-    @GetMapping("/dtls/{todoId}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> getTodoById(@PathVariable Integer todoId) throws ResourceNotFoundException {
+    @Override
+    public ResponseEntity<?> getTodoById(Integer todoId) throws ResourceNotFoundException {
 
         TodoDto isAvailable = todoService.getTodoById(todoId);
 
-            return CommonUtil.createBuildResponse(isAvailable, HttpStatus.OK);
+        return CommonUtil.createBuildResponse(isAvailable, HttpStatus.OK);
 
     }
 
-    @GetMapping("/todos")
-    @PreAuthorize("hasRole('USER')")
+
+    @Override
     public ResponseEntity<?> getAllTodoByUser() {
 
         List<TodoDto> todoByUser = todoService.getTodoByUser();
 
-        if  (CollectionUtils.isEmpty(todoByUser)) {
+        if (CollectionUtils.isEmpty(todoByUser)) {
             return CommonUtil.createErrorResponseMessage("Todo is empty", HttpStatus.NO_CONTENT);
         }
         return CommonUtil.createBuildResponse(todoByUser, HttpStatus.OK);
     }
 
-    @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> updateTodoStatus(@PathVariable Integer id,@RequestBody TodoDto todoDto) throws ResourceNotFoundException {
 
-       boolean isUpdated =   todoService.updateStatus(id,todoDto);
+    @Override
+    public ResponseEntity<?> updateTodoStatus(Integer id, TodoDto todoDto) throws ResourceNotFoundException {
 
-       if (isUpdated){
-           return CommonUtil.createBuildResponseMessage("Todo updated Successfully!",HttpStatus.CREATED);
-       }
+        boolean isUpdated = todoService.updateStatus(id, todoDto);
 
-        return CommonUtil.createErrorResponseMessage("Todo update failed!",HttpStatus.BAD_REQUEST);
+        if (isUpdated) {
+            return CommonUtil.createBuildResponseMessage("Todo updated Successfully!", HttpStatus.CREATED);
+        }
+
+        return CommonUtil.createErrorResponseMessage("Todo update failed!", HttpStatus.BAD_REQUEST);
     }
 
 

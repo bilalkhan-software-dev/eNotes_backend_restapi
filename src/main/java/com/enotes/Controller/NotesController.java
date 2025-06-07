@@ -1,38 +1,33 @@
 package com.enotes.Controller;
 
-import com.enotes.Dto.CategoryDto;
 import com.enotes.Dto.FavouriteNotesDto;
 import com.enotes.Dto.NotesDto;
 import com.enotes.Dto.NotesResponse;
+import com.enotes.Endpoints.NotesControllerEndpoints;
 import com.enotes.Entity.FileDetails;
 import com.enotes.Exception.ResourceNotFoundException;
 import com.enotes.Service.NotesService;
-import com.enotes.Util.AppConstant;
 import com.enotes.Util.CommonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/note")
 @RequiredArgsConstructor
-public class NotesController {
+public class NotesController implements NotesControllerEndpoints {
 
     private final NotesService notesService;
 
-    @PostMapping("/add-notes")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> saveNotes(@RequestParam String notes, @RequestParam(required = false) MultipartFile file) throws Exception {
+
+    @Override
+    public ResponseEntity<?> saveNotes(String notes, MultipartFile file) throws Exception {
 
         boolean isAdded = notesService.addNote(notes, file);
         if (isAdded) {
@@ -41,8 +36,8 @@ public class NotesController {
         return CommonUtil.createErrorResponseMessage("Note Saved Failed", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @GetMapping("/all-notes")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+
+    @Override
     public ResponseEntity<?> getAllNotes() {
         List<NotesDto> allNotes = notesService.getAllNotes();
 
@@ -52,14 +47,8 @@ public class NotesController {
         return CommonUtil.createBuildResponse(allNotes, HttpStatus.OK);
     }
 
-    @GetMapping("/active-notes")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> getAllActiveNotes(
-            @RequestParam(name = "number",defaultValue = AppConstant.DefaultPageNumber) Integer pageNo,
-            @RequestParam(name = "size",defaultValue = AppConstant.DefaultPageSize) Integer pageSize,
-            @RequestParam(name = "sort",defaultValue = "id") String sort,
-            @RequestParam(name = "direction",defaultValue = "asc") String direction
-    ) throws ResourceNotFoundException {
+    @Override
+    public ResponseEntity<?> getAllActiveNotes(Integer pageNo, Integer pageSize, String sort, String direction) throws ResourceNotFoundException {
 
         NotesResponse notesByUserWithPagination = notesService.getAllActiveNotesByUserWithPagination(pageNo, pageSize, sort, direction);
 
@@ -72,8 +61,21 @@ public class NotesController {
         return CommonUtil.createBuildResponse(notesByUserWithPagination, HttpStatus.OK);
     }
 
-    @GetMapping("/recycle-bin")
-    @PreAuthorize("hasRole('USER')")
+    @Override
+    public ResponseEntity<?> searchNotes(String keyword, Integer pageNo, Integer pageSize, String sort, String direction) throws ResourceNotFoundException {
+
+     NotesResponse searchResult =   notesService.searchNotes(keyword,pageNo,pageSize,sort,direction);
+
+        List<NotesDto> notesDtoList = searchResult.getNotesDtoList();
+
+        if (CollectionUtils.isEmpty(notesDtoList)){
+            return CommonUtil.createErrorResponseMessage("No result found",HttpStatus.NO_CONTENT);
+        }
+
+        return CommonUtil.createBuildResponse(searchResult,HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<?> getUserRecycleBinNotes() throws ResourceNotFoundException {
 
         List<NotesDto> userRecycleBinNotes = notesService.getUserRecycleBinNotes();
@@ -85,9 +87,8 @@ public class NotesController {
     }
 
 
-    @GetMapping("/download/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public ResponseEntity<?> downloadNoteWithId(@PathVariable Integer id) throws Exception {
+   @Override
+    public ResponseEntity<?> downloadNoteWithId( Integer id) throws Exception {
 
         FileDetails fileDetails = notesService.getFileDetailsById(id);
         byte[] data = notesService.downloadFile(fileDetails);
@@ -101,9 +102,8 @@ public class NotesController {
 
 
 
-    @DeleteMapping("/soft-delete/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> temporaryDeleteNote(@PathVariable Integer id) throws ResourceNotFoundException {
+    @Override
+    public ResponseEntity<?> temporaryDeleteNote( Integer id) throws ResourceNotFoundException {
 
         boolean isDeleted = notesService.temporaryDeleteNote(id);
         if (isDeleted) {
@@ -112,26 +112,22 @@ public class NotesController {
         return CommonUtil.createErrorResponseMessage("Note Deletion Failed", HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping("/hard-delete/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> permanentlyDeleteNote(@PathVariable Integer id) throws ResourceNotFoundException {
+    @Override
+    public ResponseEntity<?> permanentlyDeleteNote(Integer id) throws ResourceNotFoundException {
 
         notesService.permanentlyDeleteNote(id);
             return CommonUtil.createBuildResponseMessage("Note deleted permanently Successfully!", HttpStatus.OK);
     }
 
-    @DeleteMapping("/empty-bin")
-    @PreAuthorize("hasRole('USER')")
+    @Override
     public ResponseEntity<?> emptyRecycleBin()  {
 
         notesService.clearRecycleBin();;
             return CommonUtil.createBuildResponseMessage("Recycle Bin empty Successfully!", HttpStatus.OK);
     }
 
-
-    @GetMapping("/add-favourite/{noteId}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> addNotesToFavourite(@PathVariable Integer noteId) throws ResourceNotFoundException {
+    @Override
+    public ResponseEntity<?> addNotesToFavourite( Integer noteId) throws ResourceNotFoundException {
 
         notesService.addNotesToFavourite(noteId);
         return CommonUtil.createBuildResponseMessage("Note Successfully added to favourite !",HttpStatus.CREATED);
@@ -139,17 +135,15 @@ public class NotesController {
     }
 
 
-    @DeleteMapping("/un-favourite-note/{favNoteId}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> unFavouriteNotes(@PathVariable Integer favNoteId) throws ResourceNotFoundException {
+    @Override
+    public ResponseEntity<?> unFavouriteNotes( Integer favNoteId) throws ResourceNotFoundException {
 
         notesService.unFavouriteNote(favNoteId);
         return CommonUtil.createBuildResponseMessage("Notes Successfully removed from favourite list",HttpStatus.OK);
 
     }
 
-    @GetMapping("/favourite-notes")
-    @PreAuthorize("hasRole('USER')")
+    @Override
     public ResponseEntity<?> getAllFavouriteNotesOfTheUser(){
 
         List<FavouriteNotesDto> userFavouriteNotes = notesService.getUserFavouriteNotes();
@@ -161,9 +155,8 @@ public class NotesController {
         return CommonUtil.createBuildResponse(userFavouriteNotes,HttpStatus.OK);
     }
 
-    @GetMapping("/copy/{noteId}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> copyNote(@PathVariable Integer noteId) throws ResourceNotFoundException {
+    @Override
+    public ResponseEntity<?> copyNote( Integer noteId) throws ResourceNotFoundException {
 
         boolean isCopied = notesService.copyNote(noteId);
         if (isCopied){
@@ -173,9 +166,8 @@ public class NotesController {
     }
 
 
-    @PutMapping("/restore-notes/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> restoreNotes(@PathVariable Integer id) throws ResourceNotFoundException {
+    @Override
+    public ResponseEntity<?> restoreNotes( Integer id) throws ResourceNotFoundException {
 
         boolean isRestored = notesService.restoreNotes(id);
         if (isRestored){
@@ -185,9 +177,8 @@ public class NotesController {
         return CommonUtil.createErrorResponseMessage("Error during restoring note",HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @PutMapping("/update-notes/{id}")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<?> updateNotes(@PathVariable Integer id, @RequestParam String notes, @RequestParam(required = false) MultipartFile file) throws Exception {
+    @Override
+    public ResponseEntity<?> updateNotes( Integer id, String notes, MultipartFile file) throws Exception {
 
         boolean isUpdated = notesService.updateNote(id, notes, file);
 
