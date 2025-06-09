@@ -8,8 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 public class NotesRequest {
 
-    private Integer id;
-
     private String title;
 
     private String description;
