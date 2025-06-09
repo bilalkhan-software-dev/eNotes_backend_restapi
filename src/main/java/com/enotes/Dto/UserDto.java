@@ -1,5 +1,6 @@
 package com.enotes.Dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 @Builder
 public class UserDto {
 
+    @Schema(hidden = true)
     private Integer id;
 
     private String firstName;
@@ -35,9 +37,11 @@ public class UserDto {
     @NoArgsConstructor
     @Getter
     @Setter
-    public static class RoleDto{
+    public static class RoleDto {
 
         private Integer id;
+
+        @Schema(hidden = true)
         private String name;
 
     }

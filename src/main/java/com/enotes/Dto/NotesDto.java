@@ -1,5 +1,6 @@
 package com.enotes.Dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class NotesDto {
 
+    @Schema(hidden = true)
     private Integer id;
 
     private String title;
@@ -29,14 +31,19 @@ public class NotesDto {
 
     private Boolean isDeleted;
 
+
     private LocalDateTime deletedOn;
 
+    @Schema(hidden = true)
     private Integer createdBy;
 
+    @Schema(hidden = true)
     private Date createdOn;
 
+    @Schema(hidden = true)
     private Integer updatedBy;
 
+    @Schema(hidden = true)
     private Date updatedOn;
 
 
