@@ -21,7 +21,6 @@ public class HomeServiceImpl implements HomeService {
     @Override
     public boolean verifyEmail(Integer userId, String token) throws IllegalArgumentException, ResourceNotFoundException {
 
-        log.info("HomeServiceImpl : verifyEmail() Start");
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("Invalid user!")
         );
@@ -40,7 +39,6 @@ public class HomeServiceImpl implements HomeService {
         }
 
         User isVerified = userRepository.save(user);
-        log.info("HomeServiceImpl : verifyEmail() End");
         return !ObjectUtils.isEmpty(isVerified);
 
     }

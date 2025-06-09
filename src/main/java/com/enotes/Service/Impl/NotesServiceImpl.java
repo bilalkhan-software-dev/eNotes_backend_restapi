@@ -2,11 +2,11 @@ package com.enotes.Service.Impl;
 
 import com.enotes.Dto.FavouriteNotesDto;
 import com.enotes.Dto.NotesDto;
-import com.enotes.Dto.NotesDto.FilesDto;
 import com.enotes.Dto.NotesResponse;
 import com.enotes.Entity.FavouriteNotes;
 import com.enotes.Entity.FileDetails;
 import com.enotes.Entity.Notes;
+import com.enotes.Entity.User;
 import com.enotes.Exception.ResourceNotFoundException;
 import com.enotes.Repository.CategoryRepository;
 import com.enotes.Repository.FavouriteNotesRepository;
@@ -89,6 +89,9 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public boolean updateNote(Integer id, String notes, MultipartFile file) throws Exception {
+        User loggedInUserDetails = CommonUtil.GetLoggedInUserDetails();
+        Integer userId = loggedInUserDetails.getId();
+        String name = loggedInUserDetails.getFirstName() + " " + loggedInUserDetails.getLastName();
         // Parse notes JSON
         ObjectMapper mapper = new ObjectMapper();
         NotesDto notesDto = mapper.readValue(notes, NotesDto.class);
@@ -99,8 +102,9 @@ public class NotesServiceImpl implements NotesService {
         // Validate note data
         validation.NotesValidation(notesDto);
 
+
         // Check if note exists
-        Notes existingNote = notesRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + id));
+        Notes existingNote = notesRepository.findByIdAndCreatedByAndIsDeletedFalse(id, userId).orElseThrow(() -> new ResourceNotFoundException("Note not found with id: " + id + " This note is added you :" + name));
 
         modelMapper.getConfiguration().setSkipNullEnabled(true);
         // Update fields from DTO
@@ -246,7 +250,7 @@ public class NotesServiceImpl implements NotesService {
 
         Integer userId = CommonUtil.GetLoggedInUserDetails().getId();
         Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        Pageable pageable = PageRequest.of(pageNo,pageSize,sort);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<Notes> searchedNotesList = notesRepository.searchNotes(keyword, userId, pageable);
         List<NotesDto> searchedNotesDtoList = searchedNotesList.stream().map(list -> modelMapper.map(list, NotesDto.class)).toList();
@@ -293,9 +297,9 @@ public class NotesServiceImpl implements NotesService {
                 () -> new ResourceNotFoundException("Notes not found!")
         );
 
-        if (notes.getIsDeleted()){
+        if (notes.getIsDeleted()) {
             notesRepository.delete(notes);
-        }else {
+        } else {
             throw new IllegalArgumentException("Sorry, you cannot delete this permanently directly");
         }
     }
@@ -323,7 +327,7 @@ public class NotesServiceImpl implements NotesService {
         if (!CollectionUtils.isEmpty(isDeleted)) {
             notesRepository.deleteAll(isDeleted);
         }
-        if (ObjectUtils.isEmpty(isDeleted)){
+        if (ObjectUtils.isEmpty(isDeleted)) {
             throw new IllegalArgumentException("Recycle Bin is already empty");
         }
     }
@@ -357,13 +361,13 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public List<FavouriteNotesDto> getUserFavouriteNotes(){
+    public List<FavouriteNotesDto> getUserFavouriteNotes() {
 
-        Integer userId = CommonUtil.GetLoggedInUserDetails().getId() ;
+        Integer userId = CommonUtil.GetLoggedInUserDetails().getId();
         List<FavouriteNotes> favouriteNotesByUserId = favouriteNotesRepository.findByUserId(userId);
 
         return favouriteNotesByUserId.stream()
-                .map(favNotes ->modelMapper.map(favNotes, FavouriteNotesDto.class)).toList();
+                .map(favNotes -> modelMapper.map(favNotes, FavouriteNotesDto.class)).toList();
     }
 
     @Override

@@ -45,7 +45,19 @@ website:
 upload:
   file:
     path: ${FILE_PATH:enotes/}
-
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
+    path: /eNotes-doc
+  api-docs:
+    path: /eNotes-api-doc
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#        exclude: logger,bean,health
 ---
 # prod profile configuration
 spring:
@@ -84,6 +96,25 @@ website:
 upload:
   file:
     path: ${FILE_PATH:enotes/}
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
+    path: /eNotes-doc
+  api-docs:
+    path: /eNotes-api-doc
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#        exclude: logger,bean,health
+logging:
+  level:
+    org:
+     springdoc: DEBUG
+     springframework.web: DEBUG
+
 
 
 ---
@@ -124,4 +155,16 @@ website:
 upload:
   file:
     path: ${FILE_PATH:enotes/}
-
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+    tags-sorter: alpha
+    path: /eNotes-doc
+  api-docs:
+    path: /eNotes-api-doc
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#        exclude: logger,bean,health
