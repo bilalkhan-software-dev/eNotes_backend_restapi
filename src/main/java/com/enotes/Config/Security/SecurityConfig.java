@@ -50,21 +50,23 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                   auth.requestMatchers("/api/v1/home/**","/api/v1/auth/**")
-                           .permitAll().anyRequest().authenticated()
+                        auth.requestMatchers(
+                                        "/api/v1/home/**",
+                                        "/api/v1/auth/**",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**",
+                                        "/eNotes-doc/**",
+                                        "/eNotes-api-doc/**",
+                                        "/actuator/**",
+                                        "/api/v1/cache/**"
+                                )
+                                .permitAll().anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
-        // Jwt-based authentication configuration
+                // Jwt-based authentication configuration
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        ;
-
-
-
-
-
-
         return http.build();
     }
 

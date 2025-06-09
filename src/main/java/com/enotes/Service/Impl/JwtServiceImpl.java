@@ -28,13 +28,11 @@ public class JwtServiceImpl implements JwtService {
     private String secretKey="";
 
     public JwtServiceImpl() {
-        log.info("JwtServiceImpl Constructor() start");
         try {
 
             KeyGenerator keyGeneratedInstance = KeyGenerator.getInstance("HmacSHA256");
             SecretKey generatedKey = keyGeneratedInstance.generateKey();
             secretKey = Base64.getEncoder().encodeToString(generatedKey.getEncoded());
-            log.info("JwtServiceImpl Constructor() end");
         } catch (Exception e) {
             log.error("JwtServiceImpl Constructor caught exception :{}", e.getMessage());
         }
@@ -42,7 +40,6 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(User user) {
-        log.info("JwtServiceImpl generateToken(User user) Start");
 
         Map<String, Object> claims = new LinkedHashMap<>();
         claims.put("id", user.getId());
@@ -56,21 +53,16 @@ public class JwtServiceImpl implements JwtService {
                 .and()
                 .signWith(getKey())
                 .compact();
-        log.info("JwtServiceImpl generateToken(User user) before return");
         return token;
     }
 
     private Key getKey() {
-        log.info("JwtServiceImpl getKey() Start");
         byte[] decode = Decoders.BASE64.decode(secretKey);
-        log.info("JwtServiceImpl getKey() End");
         return Keys.hmacShaKeyFor(decode);
     }
 
     private SecretKey decryptKey(String token) {
-        log.info("JwtServiceImpl decryptKey() Start");
         byte[] decodedKeys = Decoders.BASE64.decode(secretKey);
-        log.info("JwtServiceImpl decryptKey() End before return");
         return Keys.hmacShaKeyFor(decodedKeys);
     }
 
@@ -95,38 +87,29 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String extractUsername(String token) {
-        log.info("JwtServiceImpl extractUsername() Start");
         Claims allClaims = extractAllClaims(token);
-        log.info("JwtServiceImpl extractUsername()  just before return");
         return allClaims.getSubject();
     }
 
     private String extractRole(String token){
-        log.info("JwtServiceImpl extractRole() Start");
         Claims allClaims = extractAllClaims(token);
-        String role = (String) allClaims.get("role");
-        log.info("JwtServiceImpl extractRole()  just before return");
-        return role;
+        return (String) allClaims.get("role");
     }
 
     private Boolean isTokenExpired(String token){
-        log.info("JwtServiceImpl isTokenExpired() Start");
         Claims allClaims = extractAllClaims(token);
         Date expiryDate = allClaims.getExpiration();
-        log.info("JwtServiceImpl isTokenExpired()  just before return");
         return expiryDate.before(new Date());
     }
 
     @Override
     public boolean validateToken(String token, UserDetails userDetails) {
-        log.info("JwtServiceImpl validateToken() Start");
 
         String username = extractUsername(token);
         Boolean isTokenExpired = isTokenExpired(token);
         if (username.equalsIgnoreCase(userDetails.getUsername()) && !isTokenExpired){
             return true;
         }
-        log.info("JwtServiceImpl validateToken()  just before return");
         return false;
     }
 
