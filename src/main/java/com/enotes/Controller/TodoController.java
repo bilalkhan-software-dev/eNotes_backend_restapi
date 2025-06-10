@@ -49,7 +49,7 @@ public class TodoController implements TodoControllerEndpoints {
         List<TodoDto> todoByUser = todoService.getTodoByUser();
 
         if (CollectionUtils.isEmpty(todoByUser)) {
-            return CommonUtil.createErrorResponseMessage("Todo is empty", HttpStatus.NO_CONTENT);
+            return CommonUtil.createErrorResponseMessage("Your Todo is empty!", HttpStatus.OK);
         }
         return CommonUtil.createBuildResponse(todoByUser, HttpStatus.OK);
     }

@@ -24,7 +24,7 @@ public class CacheController implements CacheControllerEndpoint {
 
         Collection<String> caches = cacheManagerService.getCache();
         if (CollectionUtils.isEmpty(caches)) {
-            return CommonUtil.createBuildResponseMessage("No recent caches", HttpStatus.NO_CONTENT);
+            return CommonUtil.createBuildResponseMessage("No caches found", HttpStatus.OK);
         }
         return CommonUtil.createBuildResponse(caches, HttpStatus.OK);
     }
@@ -35,7 +35,7 @@ public class CacheController implements CacheControllerEndpoint {
 
 
         if (ObjectUtils.isEmpty(cacheName)) {
-            return CommonUtil.createErrorResponseMessage("No recent caches", HttpStatus.NO_CONTENT);
+            return CommonUtil.createErrorResponseMessage("No cache found by name", HttpStatus.NOT_FOUND);
         }
 
         return CommonUtil.createBuildResponse(cacheName, HttpStatus.OK);

@@ -56,7 +56,7 @@ public class NotesController implements NotesControllerEndpoints {
         List<NotesDto> notesDtoList = notesByUserWithPagination.getNotesDtoList();
 
         if (CollectionUtils.isEmpty(notesDtoList)){
-            return CommonUtil.createErrorResponseMessage("No notes Added by the user",HttpStatus.NO_CONTENT);
+            return CommonUtil.createErrorResponseMessage("No notes Added by the user",HttpStatus.OK);
         }
 
         return CommonUtil.createBuildResponse(notesByUserWithPagination, HttpStatus.OK);
@@ -70,7 +70,7 @@ public class NotesController implements NotesControllerEndpoints {
         List<NotesDto> notesDtoList = searchResult.getNotesDtoList();
 
         if (CollectionUtils.isEmpty(notesDtoList)){
-            return CommonUtil.createErrorResponseMessage("No result found",HttpStatus.NO_CONTENT);
+            return CommonUtil.createErrorResponseMessage("No result found",HttpStatus.NOT_FOUND);
         }
 
         return CommonUtil.createBuildResponse(searchResult,HttpStatus.OK);
@@ -123,7 +123,7 @@ public class NotesController implements NotesControllerEndpoints {
     @Override
     public ResponseEntity<?> emptyRecycleBin()  {
 
-        notesService.clearRecycleBin();;
+        notesService.clearRecycleBin();
             return CommonUtil.createBuildResponseMessage("Recycle Bin empty Successfully!", HttpStatus.OK);
     }
 
